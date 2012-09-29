@@ -82,7 +82,7 @@ SignalWire magically exposes all the Tables/Sets/Collections in your Data store 
 	           .done(function (result) {
                     $("#task-list").html(result.length + " records found<hr/>");
                     $.each(result, function (index, task) {
-                        addTask(task);
+                        //do something with the task
                     });
                 }).fail(function (result) {
                     alert(JSON.stringify(result.Error));
@@ -104,12 +104,13 @@ You can use $.wire.yourcollection.add(..) to add objects to a collection. The ad
 	//Add a task to the Tasks collection                    
 	$.wire.tasks.add(t).done(function (task) {
 		//Note that you'll get the auto generated Id
-		addTask(task);                        
+		//task.Id will be valid
+		
 	}).fail(function (result) {
 			//result.Error contains the error if any                        
 			//result.ValidationResults contains the Validation results if any 
 			alert(JSON.stringify(result.Error));
-			alert(JSON.stringify(result.Error)); });
+	});
 ```				
 
 Similarly, you can use 

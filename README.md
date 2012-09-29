@@ -19,11 +19,11 @@ You may start with Creating an Empty ASP.NET Project in Visual Studio 2012 (You 
 
 > Install-Package SignalWire
 
-This will add the following components to your project.
+This will add the required SignalWire dependencies and references. Also, the following files will be added to your project, as a starting point/example.
 
 * Models\TaskDb.cs - An example Entity Framework Data Context. You can use your instead 
 * Hubs\DataHub.cs - An example Datahub.
-* Scripts\SignalWire.js - Clientside JQuery Pluin for SignalR.
+* Scripts\SignalWire.js - Clientside JQuery Pluin that Wraps SignalR hubs to provide $.wire.
 
 Now, you may goto Index.html, and ensure all your JS file versions are correct, and run the project with index.html as the startup page.
 

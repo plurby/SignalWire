@@ -28,7 +28,9 @@ This will add the required SignalWire dependencies and references. Also, the fol
 Now, you may goto Index.html, and ensure all your JS file versions are correct, and run the project with index.html as the startup page.
 
 ## Server side - The Data hub and Poco Classes ##
-The Only server side code you need is your POCO objects and a hub inherited from the DataHub base class, defined in the SignalWire library. You need to use the Collections attribute to map a POCO class with the set/collection, and make sure you always do that in lower case.
+The Only server side code you need is your POCO objects/ORM and a hub inherited from the DataHub base class, defined in the SignalWire library. You need to use the Collections attribute to map a POCO class with the set/collection, and make sure you always do that in lower case.
+
+You may also use the Validation related annotation attributes as these attributes are supported for Model validation.
 
 ```
    //Simple POCO class to represent a task
@@ -65,9 +67,9 @@ In the example you get (when you install the Nuget package), you’ll see we are u
 public class Data : DataHub<EFContextProvider<TaskDb>> 
 ```
 
-This will expose the collections in TaskDb over the wire, and that's all you need to access collections as shown below.
+This will expose the collections in TaskDb over the wire, and that's all you need to access collections as shown below. 
 
-## Initializing and Issuing Queries ##
+## Client Side - Initializing and Issuing Queries ##
 
 SignalWire magically exposes all the Tables/Sets/Collections in your Data store back end via the $.wire Javascript object at client side. You can initialize $.wire using the init() method, which returns a JQuery Deferred. Here is a quick example regarding initializing Wire and issuing a LINQ query.
 
@@ -118,6 +120,8 @@ Similarly, you can use
 * $.wire.yourcollection.remove(item) to remove items
 * $.wire.yourcollection.update(item) to update an item (based on Id match).
 * $.wire.yourcollection.read({"query":"expression", "skip":"xxx", "take":"xxx"}) to read from a specific collection
+
+All the above methods will return a JQuery Deferred object, so you can use .done(..) and .fail(..) as in the above add example.
 
 ##Permissions##
 

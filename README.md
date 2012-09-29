@@ -1,9 +1,9 @@
 # SignalWire #
 
-SignalWire is an experimental Server<->Client plumbing project, that magically wires up your HTML5 front end and to your data store. SignalWire uses SignalR and Roslyn libraries to implement features like
+SignalWire is an experimental Server<->Client plumbing project, that magically wires up your HTML5 front end and your data store. SignalWire uses SignalR and Roslyn libraries to implement features like
 
 * Exposing collections in your Back end directly over the wire
-* Enable using C# in your HTML applications.
+* Use C# in your HTML applications.
 
 As of now, support is available for EntityFramework and MongoDb as the back end. Also, it provides
 
@@ -25,10 +25,10 @@ This will add the following components to your project.
 * Hubs\DataHub.cs - An example Datahub.
 * Scripts\SignalWire.js - Clientside JQuery Pluin for SignalR.
 
-Now, goto Index.html, and verify all your JS file versions are correct.
+Now, you may goto Index.html, and ensure all your JS file versions are correct, and run the project with index.html as the startup page.
 
-## Serverside Code ##
-The Only server side code you need is your POCO objects and a hub inherited from the DataHub defined in the SignalWire library. You need to use the Collections attribute to map a POCO class with the set/collection, and make sure you always do that in lower case.
+## Server side - The Data hub and Poco Classes ##
+The Only server side code you need is your POCO objects and a hub inherited from the DataHub base class, defined in the SignalWire library. You need to use the Collections attribute to map a POCO class with the set/collection, and make sure you always do that in lower case.
 
 ```
    //Simple POCO class to represent a task
@@ -57,17 +57,19 @@ The Only server side code you need is your POCO objects and a hub inherited from
     }
 ```
 
-Now, you need a hub. By convention, Wire picks the server hub’s name as Data if it is not specified in the init method of $.wire.init(..). In the example you get when you install the Nuget package, you’ll see we are using an Entity Framework Context Provider, for TaskDb. Replace TaskDb with your own EF Data context if required. Once you do that, all your collections/sets with in the context can be accessed over the wire. In the example, you’ve only on set, that is Tasks.
+Now, you need a hub that uses TaskDb DbContext. By convention, Wire expects the server hub’s name as 'Data' if it is not specified in the init method of $.wire.init(..). 
+
+In the example you get (when you install the Nuget package), you’ll see we are using an Entity Framework Context Provider. Replace TaskDb with your own EF Data context if required. Once you do that, all your collections/sets with in the context can be accessed over the wire. 
 
 ```
 public class Data : DataHub<EFContextProvider<TaskDb>> 
 ```
 
-That's all you need to access collections via the Wire.
+This will expose the collections in TaskDb over the wire, and that's all you need to access collections as shown below.
 
 ## Initializing and Issuing Queries ##
 
-SignalWire magically exposes all your Tables/Sets/Collections in your Data back end via the $.wire Javascript object at client side. You can initialize $.wire using the init() method, which returns a JQuery Deferred. Here is a quick example regarding initializing Wire and issuing a LINQ query.
+SignalWire magically exposes all the Tables/Sets/Collections in your Data store back end via the $.wire Javascript object at client side. You can initialize $.wire using the init() method, which returns a JQuery Deferred. Here is a quick example regarding initializing Wire and issuing a LINQ query.
 
 ```
      
@@ -85,11 +87,12 @@ SignalWire magically exposes all your Tables/Sets/Collections in your Data back 
                 }).fail(function (result) {
                     alert(JSON.stringify(result.Error));
                 });
+		});		
 ```
 
 ##Other Wire Methods##
 
-You can use $.wire.yourcollection.add(..) to add objects. Like this. The add method will return the added item with updated Id up on completion.
+You can use $.wire.yourcollection.add(..) to add objects to a collection. The add method will return the added item with updated Id up on completion.
 
 ```
 	var t = {
@@ -128,4 +131,6 @@ I'm planning the following features based on my time
 * Publishing and data sync
 * Permission based events, may be using something like PushQA.
 
+Read more here in my blog
+* [Introducing SignalWire] (http://www.amazedsaint.com/2012/09/signalwire-magical-plumbing-with-your.html)
 

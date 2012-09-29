@@ -27,6 +27,44 @@ This will add the following components to your project.
 
 Now, goto Index.html, and verify all your JS file versions are correct.
 
+## Serverside Code ##
+The Only server side code you need is your POCO objects and a hub inherited from the DataHub defined in the SignalWire library. You need to use the Collections attribute to map a POCO class with the set/collection, and make sure you always do that in lower case.
+
+```
+   //Simple POCO class to represent a task
+    [Collection("tasks")]
+    public class Task
+    {
+        [Required]
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(100, ErrorMessage = "Subject cannot be longer than 40 characters.")]
+        public string Subject { get; set; }
+
+        [Required]
+        [MaxLength(200, ErrorMessage = "Details cannot be longer than 40 characters.")]
+        public string Details { get; set; }
+
+        public bool Completed { get; set; }
+    }
+ 
+ 
+   //Simple demo db context   
+    public class TaskDb : DbContext
+    {
+        public DbSet<Task> Tasks { get; set; }
+    }
+```
+
+Now, you need a hub. By convention, Wire picks the server hub’s name as Data if it is not specified in the init method of $.wire.init(..). In the example you get when you install the Nuget package, you’ll see we are using an Entity Framework Context Provider, for TaskDb. Replace TaskDb with your own EF Data context if required. Once you do that, all your collections/sets with in the context can be accessed over the wire. In the example, you’ve only on set, that is Tasks.
+
+```
+public class Data : DataHub<EFContextProvider<TaskDb>> 
+```
+
+That's all you need to access collections via the Wire.
+
 ## Initializing and Issuing Queries ##
 
 SignalWire magically exposes all your Tables/Sets/Collections in your Data back end via the $.wire Javascript object at client side. You can initialize $.wire using the init() method, which returns a JQuery Deferred. Here is a quick example regarding initializing Wire and issuing a LINQ query.

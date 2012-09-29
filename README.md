@@ -2,16 +2,16 @@
 
 SignalWire is an experimental Server<->Client plumbing project, that magically wires up your HTML5 front end and to your data store. SignalWire uses SignalR and Roslyn libraries to implement features like
 
-*Exposing collections in your Back end directly over the wire
-*Enable using C# in your HTML applications.
+* Exposing collections in your Back end directly over the wire
+* Enable using C# in your HTML applications.
 
 As of now, support is available for EntityFramework and MongoDb as the back end. Also, it provides
 
-*A light weight permission framework (wip)
-*A Client side Javascript API to access your collections with minimal/no serverside code
-*Model Validation support using normal C#/ASP.NET Data Validation attributes
-*LINQ support to issue Linq queires from HTML pages (highly experimental, as of now no sandboxing support per caller)
-*C# code in your HTML pages (wip)
+* A light weight permission framework (wip)
+* A Client side Javascript API to access your collections with minimal/no serverside code
+* Model Validation support using normal C#/ASP.NET Data Validation attributes
+* LINQ support to issue Linq queires from HTML pages (highly experimental, as of now no sandboxing support per caller)
+* C# code in your HTML pages (wip)
 
 ## How To Start ##
 
@@ -124,8 +124,8 @@ You can decorate your Model classes with Custom permission attributes that imple
 
 I'm planning the following features based on my time
 
-*Sandboxed execution for C# scripts in HTML page that can access client side context
-*Publishing and data sync
-*Permission based events, may be using something like PushQA.
+* Sandboxed execution for C# scripts in HTML page that can access client side context
+* Publishing and data sync
+* Permission based events, may be using something like PushQA.
 
 

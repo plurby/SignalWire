@@ -47,50 +47,67 @@
 
             $.wire.init().done(function () {
 
-                $.wire.tasks.query("from Task t in Tasks select t").done(function (result) {
-                    $("#task-list").html(result.length + " records found<hr/>");
-                    $.each(result, function (index, task) {
-                        addTask(task);
-                    });
-                }).fail(function (result) {
-                    alert(JSON.stringify(result.Error));
-                });
-
-
-
+        
                 $("#btn-add").click(function () {
                     var t = {
                         "subject": $("#subject").val(),
                         "details": $("#details").val(),
                     };
 
-
                     //Add a task to the Tasks collection                    
                     $.wire.tasks.add(t).done(function (task) {
                         //Note that you'll get the auto generated Id
-                        addTask(task);                        
+                        $("#task-list").html("<h4> Record Added, It's Id is " + JSON.stringify(task.Id) + "</h4>");
+                        addTask(task);
                     }).fail(function (result) {
-                            //result.Error contains the error if any                        
-                            //result.ValidationResults contains the Validation results if any 
-                            alert(JSON.stringify(result.Error));
-                            alert(JSON.stringify(result.Error)); });
+                        //result.Error contains the error if any                        
+                        //result.ValidationResults contains the Validation results if any 
+                        alert(JSON.stringify(result.Error));
+                        alert(JSON.stringify(result.Error));
+                    });
                 });
 
                 $("#btn-query").click(function () {
-
                     //Query for the tasks. You can use LINQ queries
                     //$.wire.tasks.query("from Task t in Tasks select t").text()).done (..)
-                    alert($("#query").val());
-                    $.wire.tasks.query($("#query").val()).done(function (result) {
-                        $("#task-list").html(result.length + " records found<hr/>");
+                    $.wire.tasks.query($("#text-query").val()).done(function (result) {
+                        $("#task-list").html("<h4>" + result.length + " records found </h4>");
                         $.each(result, function (index, task) {
                             addTask(task);
                         });
                     }).fail(function (result) {
                         alert(JSON.stringify(result.Error));
                     });
-
                 });
+
+
+                $("#btn-odata").click(function () {
+                    //Query for the tasks. You can use LINQ queries
+                    var qry = { "$filter": $("#text-odata").val() };
+                    $.wire.tasks.read(qry).done(function (result) {
+                        $("#task-list").html("<h4>" + result.length + " records found </h4>");
+                        $.each(result, function (index, task) {
+                            addTask(task);
+                        });
+                    }).fail(function (result) {
+                        alert(JSON.stringify(result.Error));
+                    });
+                });
+                
+                $("#btn-linqexpr").click(function () {
+                    //Query for the tasks. You can use LINQ queries
+                    //$.wire.tasks.query("from Task t in Tasks select t").text()).done (..)
+                    var qry = { "$query": $("#text-linqexpr").val() };
+                    $.wire.tasks.read(qry).done(function (result) {
+                        $("#task-list").html("<h4>" + result.length + " records found </h4>");
+                        $.each(result, function (index, task) {
+                            addTask(task);
+                        });
+                    }).fail(function (result) {
+                        alert(JSON.stringify(result.Error));
+                    });
+                });
+
             });
         });
 
@@ -120,38 +137,52 @@
     </div>
 
     <div class="container-fluid">
+
         <div class="row-fluid">
             <div class="span12">
-                <div class="span3">
-                    <div class="well">
-                        <b>Add Task</b><hr />
-                        <form>
-                        <input id="subject" type="text" placeholder="Task">
-                        <input id="details" type="text" placeholder="Details">
-                        <label class="checkbox">
-                            <input type="checkbox">
-                            Completed
-                        </label>
-                        <br />
-                        <a id="btn-add" class="btn">Add</a>
-                        </form>
-                    </div>
-                    <!--/.well -->
+                <div class="well span3">
+                    <b>Add Task</b><hr />
+                    <form>
+                    <input id="subject" type="text" placeholder="Task">
+                    <input id="details" type="text" placeholder="Details">
+                    <a id="btn-add" class="btn">Add</a>
+                    </form>
+                </div>
+                <!--/.well -->
 
-                    <div class="well">
-                        <b>Query</b><hr />
-                        <form>
-                        <textarea id="query">from Task t in Tasks select t</textarea>
-                        <a id="btn-query" class="btn">Query</a>
-                        </form>
-                    </div>
-                    <!--/.well -->
+                <div class="well span3">
+                    <b>Filter A Collection using Linq Expressions</b><hr />
+                    <form>
+                    <textarea id="text-linqexpr">row.Id > 0 && row.Id < 2</textarea>
+                    <a id="btn-linqexpr" class="btn">Read</a>
+                    </form>
                 </div>
-                <!--/span-->
-                <div class="span8">
-                    <table class="table table-striped" id="task-list"></table>
+
+                
+                <div class="well span3">
+                    <b>Filter a collection using oData</b><hr />
+                    <form>
+                    <textarea id="text-odata">Id gt 2</textarea>
+                    <a id="btn-odata" class="btn">Read</a>
+                    </form>
                 </div>
-                <!--/span-->
+                
+
+                <div class="well span3">
+                    <b>Read Database Context via Linq</b><hr />
+                    <form>
+                    <textarea id="text-query">from Task t in Tasks select t</textarea>
+                    <a id="btn-query" class="btn">Read</a>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row-fluid">
+            <div class="span12">
+                <table class="table table-striped" id="task-list"></table>
             </div>
             <!--/row-->
 
@@ -159,7 +190,7 @@
     </div>
     <!--/.fluid-container-->
     <footer>
-        <p>&copy; SignalWire 2012</p>
+        <p class="well">&copy; SignalWire 2012</p>
     </footer>
     <!-- Le javascript
             ================================================== -->

@@ -35,8 +35,11 @@
                 remove: function(obj) {
                     return wrapDeferred($.connection[h].remove(c, obj));
                 },
-                read: function(qry) {
-                    return wrapDeferred($.connection[h].read(c, qry==null?qry : {}));
+                read: function (qry) {
+                    return wrapDeferred($.connection[h].read(c, qry));
+                },
+                filter: function (qry) {
+                    return wrapDeferred($.connection[h].read(c, qry));
                 },
                 query: function (qry) {
                     return wrapDeferred($.connection[h].query(qry));

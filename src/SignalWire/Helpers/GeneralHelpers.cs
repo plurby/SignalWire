@@ -42,5 +42,7 @@ namespace SignalWire.Helpers
         {
             return new List<Assembly> {assembly}.GetTypesWithAttribute<T>();
         }
+
+        
     }
 }

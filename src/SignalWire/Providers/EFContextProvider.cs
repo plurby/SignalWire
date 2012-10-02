@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
+using Roslyn.Compilers.CSharp;
 using SignalWire.Helpers;
 using SignalWire.TypeResolvers;
 
@@ -14,7 +16,7 @@ namespace SignalWire.Providers
     {
         public EFContextProvider()
         {
-            var resolver = new EFTypeResolver(typeof (TContext));
+            var resolver = new EFTypeResolver(typeof(TContext));
             SetResolver(resolver);
         }
 
@@ -37,7 +39,7 @@ namespace SignalWire.Providers
             db.Set(ResolveModelType(table)).Attach(obj);
             db.Set(ResolveModelType(table)).Remove(obj);
             db.SaveChanges();
-            return new Result {Success = true};
+            return new Result { Success = true };
         }
 
         public override Result Update(string table, object obj)
@@ -45,46 +47,18 @@ namespace SignalWire.Providers
             var db = new TContext();
             db.Set(ResolveModelType(table)).Attach(obj);
             db.SaveChanges();
-            return new Result {Success = true};
+            return new Result { Success = true };
         }
 
 
         public override Result Read(string table, IDictionary<string, string> query)
         {
+
             var db = new TContext();
             NameValueCollection param = query.ToNameValueCollection();
             Type type = ResolveModelType(table);
             DbSet set = db.Set(type);
-            string finalQuery = "";
-            if (param["query"] != null)
-            {
-                finalQuery = string.Format("{0} " + param["query"] + "{1}",
-                                           "(from " + type.Name + " row in Rows where ",
-                                           " select row)");
-            }
-            else
-            {
-                finalQuery = "(from " + type.Name + " row in Rows select row)";
-            }
-
-            if (param["skip"] != null)
-            {
-                int skip;
-                int.TryParse(param["skip"], out skip);
-                finalQuery += ".Skip(" + skip + ")";
-            }
-            if (param["take"] != null)
-            {
-                int take;
-                int.TryParse(param["take"], out take);
-                finalQuery += ".Take(" + take + ")";
-            }
-
-
-            var host = new ScriptingHost {Rows = set};
-            host.AddReference(typeof (TContext).Assembly);
-            host.ImportNamespace(typeof (TContext).Namespace);
-            object data = host.Execute(finalQuery);
+            var data = Filter(set, type, param);
 
             return new Result
                 {
@@ -98,9 +72,9 @@ namespace SignalWire.Providers
         {
             var db = new TContext();
 
-            var host = new ScriptingHost(db) {};
-            host.AddReference(typeof (TContext).Assembly);
-            host.ImportNamespace(typeof (TContext).Namespace);
+            var host = new ScriptingHost(db) { };
+            host.AddReference(typeof(TContext).Assembly);
+            host.ImportNamespace(typeof(TContext).Namespace);
             InitializeHost(host);
 
             object data = host.Execute(query);
@@ -113,7 +87,7 @@ namespace SignalWire.Providers
 
         public override string[] GetCollectionNames()
         {
-            IEnumerable<PropertyInfo> props = typeof (TContext).GetProperties().Where
+            IEnumerable<PropertyInfo> props = typeof(TContext).GetProperties().Where
                 (p => p.PropertyType.ToGenericTypeString().StartsWith("DbSet<"));
 
             IEnumerable<string> propNames = from p in props
@@ -142,5 +116,39 @@ namespace SignalWire.Providers
                                                  .Select(ToGenericTypeString).ToArray());
             return genericTypeName + "<" + genericArgs + ">";
         }
+    }
+}
+
+public static class SyntaxTreeExtensions
+{
+    public static string Dump(this SyntaxTree tree)
+    {
+        var writer = new ConsoleDumpWalker();
+        writer.Visit(tree.GetRoot());
+        return writer.Code;
+    }
+
+    class ConsoleDumpWalker : SyntaxWalker
+    {
+
+        public string Code { get; set; }
+        public ConsoleDumpWalker()
+        {
+            Code += "";
+        }
+
+        public override void Visit(SyntaxNode node)
+        {
+            int padding = node.Ancestors().Count();
+            //To identify leaf nodes vs nodes with children
+            string prepend = node.ChildNodes().Any() ? "[-]" : "[.]";
+            //Get the type of the node
+            string line = new String(' ', padding) + prepend +
+                                    " " + node.GetType().ToString();
+            //Write the line
+            Code += line + Environment.NewLine;
+            base.Visit(node);
+        }
+
     }
 }

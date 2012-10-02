@@ -108,6 +108,7 @@ namespace SignalWire
 
         public void AddReference(Assembly asm)
         {
+
             _session.AddReference(asm);
         }
     }

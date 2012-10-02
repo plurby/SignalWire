@@ -4,8 +4,8 @@ using SignalWire.Providers;
 
 namespace SignalWire.Demo.Hubs
 {
-    public class Data : DataHub<EFContextProvider<TaskDb>>
-    {
-    }
+    public class Data : DataHub<EFContextProvider<TaskDb>>{}
+
+   
 
 }

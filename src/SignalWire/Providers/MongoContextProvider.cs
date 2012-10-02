@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SignalWire.Helpers;
+using Linq2Rest;
 
 namespace SignalWire.Providers
 {
@@ -38,45 +40,13 @@ namespace SignalWire.Providers
 
         public override Result Read(string table, IDictionary<string, string> query)
         {
-            Type t = ResolveModelType(table);
-
-            NameValueCollection param = query.ToNameValueCollection();
-
-            string finalQuery = "";
-            if (param["query"] != null)
-            {
-                finalQuery = string.Format("{0} " + param["query"] + "{1}",
-                                           "(from " + t.Name + " row in Rows where ",
-                                           " select row)");
-            }
-            else
-            {
-                finalQuery = "(from " + t.Name + " row in Rows select row)";
-            }
-
-            if (param["skip"] != null)
-            {
-                int skip;
-                int.TryParse(param["skip"], out skip);
-                finalQuery += ".Skip(" + skip + ")";
-            }
-            if (param["take"] != null)
-            {
-                int take;
-                int.TryParse(param["take"], out take);
-                finalQuery += ".Take(" + take + ")";
-            }
-
-            MongoDatabase database = GetDatabase();
-            MongoCollection collection = database.GetCollection(ResolveModelType(table), table);
-
-            var host = new ScriptingHost {Rows = collection.FindAllAs(t)};
-            host.AddReference(t.Assembly);
-            host.AddReference(typeof (MongoServer).Assembly);
-            host.AddReference(typeof (BsonArray).Assembly);
-            host.ImportNamespace(t.Namespace);
-            object data = host.Execute(finalQuery);
-
+            var type = ResolveModelType(table);
+            var param = query.ToNameValueCollection();
+            var database = GetDatabase();
+            var collection = database.GetCollection(ResolveModelType(table), table);
+            var result = collection.FindAllAs(type);
+            var data = Filter(result, type, param);
+         
             return new Result
                 {
                     Success = true,

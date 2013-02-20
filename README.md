@@ -1,6 +1,6 @@
 # SignalWire #
 
-/* Make sure the connection string in the demo project is proper and your SQL server instance is running while you run the demo */
+Note: Make sure the connection string in the demo project's web.config is proper and your SQL server instance is running while you run the demo */
 
 SignalWire is an experimental Server<->Client plumbing project, that magically wires up your HTML5 front end and your data store. SignalWire uses SignalR and Roslyn libraries to implement features like
 

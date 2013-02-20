@@ -1,5 +1,7 @@
 # SignalWire #
 
+/* Make sure the connection string in the demo project is proper and your SQL server instance is running while you run the demo */
+
 SignalWire is an experimental Server<->Client plumbing project, that magically wires up your HTML5 front end and your data store. SignalWire uses SignalR and Roslyn libraries to implement features like
 
 * Exposing collections in your Back end directly over the wire
@@ -59,9 +61,9 @@ You may also use the Validation related annotation attributes as these attribute
     }
 ```
 
-Now, you need a hub that uses TaskDb DbContext. By convention, Wire expects the server hub’s name as 'Data' if it is not specified in the init method of $.wire.init(..). 
+Now, you need a hub that uses TaskDb DbContext. By convention, Wire expects the server hubï¿½s name as 'Data' if it is not specified in the init method of $.wire.init(..). 
 
-In the example you get (when you install the Nuget package), you’ll see we are using an Entity Framework Context Provider. Replace TaskDb with your own EF Data context if required. Once you do that, all your collections/sets with in the context can be accessed over the wire. 
+In the example you get (when you install the Nuget package), youï¿½ll see we are using an Entity Framework Context Provider. Replace TaskDb with your own EF Data context if required. Once you do that, all your collections/sets with in the context can be accessed over the wire. 
 
 ```
 public class Data : DataHub<EFContextProvider<TaskDb>> 
